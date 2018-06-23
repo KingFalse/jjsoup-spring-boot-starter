@@ -3,6 +3,7 @@ package me.kagura.config;
 import javassist.*;
 import me.kagura.HttpConnection;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 
@@ -12,6 +13,7 @@ import javax.annotation.PostConstruct;
  * 配置动态生成HttpConnectionX类
  */
 @Configuration
+@ComponentScan(basePackages = "me.kagura")
 public class BeanConfig {
 
     private static Class axClass;

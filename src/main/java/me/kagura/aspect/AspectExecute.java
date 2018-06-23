@@ -62,8 +62,9 @@ public class AspectExecute {
         } else if (response != null) {
             appendCookie(target, (Connection.Response) response);
             logResponse(target, System.currentTimeMillis() - startTime);
-            target.followProcess.result = target.followProcess.doProcess(target);
-
+            if (target.followProcess != null) {
+                target.followProcess.result = target.followProcess.doProcess(target);
+            }
             return response;
         }
         return null;
