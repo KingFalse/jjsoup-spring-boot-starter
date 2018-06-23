@@ -42,7 +42,6 @@ public abstract class HttpConnection implements ConnectionX {
      * @return
      */
     public HttpConnection connect(@NonNull String url) {
-        System.err.println(initHttpConnection == null);
         try {
             HttpConnection httpConnection = (HttpConnection) beanConfig.getHttpConnection()
                     .url(url)
