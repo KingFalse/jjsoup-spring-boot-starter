@@ -1,6 +1,7 @@
-package me.kagura;
+package me.kagura.config;
 
 import javassist.*;
+import me.kagura.HttpConnection;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
