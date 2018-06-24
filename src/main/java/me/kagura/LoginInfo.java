@@ -1,5 +1,6 @@
 package me.kagura;
 
+import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.util.*;
 
@@ -17,12 +18,22 @@ public class LoginInfo {
     //代理
     public Proxy proxy;
 
+    public LoginInfo() {
+        this.traceID = UUID.randomUUID().toString();
+    }
+
     public LoginInfo(String traceID) {
         this.traceID = traceID;
     }
 
-    public LoginInfo() {
-        this.traceID = UUID.randomUUID().toString();
+    public LoginInfo(String traceID, String host, int port) {
+        this.traceID = traceID;
+        this.proxy = new Proxy(Proxy.Type.HTTP, InetSocketAddress.createUnresolved(host, port));
+    }
+
+    public LoginInfo(String traceID, Proxy proxy) {
+        this.traceID = traceID;
+        this.proxy = proxy;
     }
 
     public <T> T getExtra(String key, Class<T> classOfT) {
