@@ -131,6 +131,8 @@ public class AspectExecute {
         sb.append(lineSeparator);
         sb.append("\tCookies       :    " + req.cookies().toString());
         sb.append(lineSeparator);
+        sb.append("\tProxy         :    " + req.proxy());
+        sb.append(lineSeparator);
         if (method.hasBody()) {
             if (req.requestBody() != null) {
                 sb.append("\tBody          :    ");
