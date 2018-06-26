@@ -2,10 +2,7 @@ package me.kagura.config;
 
 import javassist.*;
 import me.kagura.HttpConnection;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.*;
 
 import javax.annotation.PostConstruct;
 
@@ -14,6 +11,7 @@ import javax.annotation.PostConstruct;
  */
 @Configuration
 @ComponentScan(basePackages = "me.kagura")
+@EnableAspectJAutoProxy(proxyTargetClass = true)
 public class BeanConfig {
 
     private static Class axClass;
