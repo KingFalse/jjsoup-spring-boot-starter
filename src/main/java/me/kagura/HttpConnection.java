@@ -1,10 +1,10 @@
 package me.kagura;
 
+import com.sun.istack.NotNull;
 import me.kagura.config.BeanConfig;
 import me.kagura.util.AopTargetUtils;
 import org.jsoup.Connection;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.lang.NonNull;
 
 import java.net.Proxy;
 import java.net.URL;
@@ -41,7 +41,7 @@ public abstract class HttpConnection implements ConnectionX {
      * @param url
      * @return
      */
-    public HttpConnection connect(@NonNull String url) {
+    public HttpConnection connect(@NotNull String url) {
         try {
             HttpConnection httpConnection = (HttpConnection) beanConfig.getHttpConnection()
                     .url(url)
@@ -63,7 +63,7 @@ public abstract class HttpConnection implements ConnectionX {
      * @param url
      * @return
      */
-    public HttpConnection connect(@NonNull String url, @NonNull LoginInfo loginInfo) {
+    public HttpConnection connect(@NotNull String url, @NotNull LoginInfo loginInfo) {
         try {
             HttpConnection httpConnection = connect(url);
             //从代理类中取出实际对象
@@ -87,7 +87,7 @@ public abstract class HttpConnection implements ConnectionX {
         return null;
     }
 
-    public HttpConnection connect(@NonNull String url, @NonNull LoginInfo loginInfo, FollowProcess followProcess) {
+    public HttpConnection connect(@NotNull String url, @NotNull LoginInfo loginInfo, FollowProcess followProcess) {
         HttpConnection httpConnection = connect(url, loginInfo);
         if (httpConnection == null) {
             return null;
