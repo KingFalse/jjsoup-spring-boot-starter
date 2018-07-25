@@ -1,5 +1,6 @@
 package me.kagura;
 
+import java.io.Serializable;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.util.*;
@@ -7,7 +8,7 @@ import java.util.*;
 /**
  * 用于存放cookie跟一些参数
  */
-public class LoginInfo {
+public class LoginInfo implements Serializable {
 
     //任务ID，也可不单独定义，放入extras中亦可
     public final String traceID;
