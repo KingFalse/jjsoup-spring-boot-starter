@@ -70,7 +70,7 @@ public abstract class HttpConnection implements ConnectionX {
             HttpConnection beanFromProxy = AopTargetUtils.getTargetObject(httpConnection, HttpConnection.class);
             //将LoginInfo跟cookie放入实际对象中
             beanFromProxy.loginInfo = loginInfo;
-            beanFromProxy.proxy((loginInfo != null && loginInfo.proxy != null) ? loginInfo.proxy : Proxy.NO_PROXY);
+            beanFromProxy.proxy((loginInfo != null && loginInfo.Proxy() != null) ? loginInfo.Proxy() : Proxy.NO_PROXY);
             beanFromProxy.cookies(loginInfo.cookies);
             if (initHttpConnection == null) {
                 return httpConnection;

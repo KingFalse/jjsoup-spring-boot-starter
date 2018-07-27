@@ -17,7 +17,9 @@ public class LoginInfo implements Serializable {
     //用于存放cookie的线程安全的cookie池
     public final Map<String, String> cookies = Collections.synchronizedNavigableMap(new TreeMap<>());
     //代理
-    public Proxy proxy;
+    private KProxy kProxy;
+    //实际代理
+    private transient Proxy proxy;
 
     public LoginInfo() {
         this.traceID = UUID.randomUUID().toString();
@@ -29,12 +31,24 @@ public class LoginInfo implements Serializable {
 
     public LoginInfo(String traceID, String host, int port) {
         this.traceID = traceID;
-        this.proxy = new Proxy(Proxy.Type.HTTP, InetSocketAddress.createUnresolved(host, port));
+        this.kProxy = new KProxy(Proxy.Type.HTTP, InetSocketAddress.createUnresolved(host, port));
     }
 
     public LoginInfo(String traceID, Proxy proxy) {
         this.traceID = traceID;
-        this.proxy = proxy;
+        this.kProxy = new KProxy(proxy.type(), proxy.address());
+    }
+
+    public LoginInfo Proxy(Proxy proxy) {
+        this.kProxy = new KProxy(proxy.type(), proxy.address());
+        return this;
+    }
+
+    public Proxy Proxy() {
+        if (proxy == null && kProxy != null) {
+            this.proxy = new Proxy(kProxy.type, kProxy.sa);
+        }
+        return this.proxy;
     }
 
     public <T> T getExtra(String key, Class<T> classOfT) {
