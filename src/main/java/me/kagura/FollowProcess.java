@@ -24,7 +24,7 @@ public abstract class FollowProcess {
         throw e;
     }
 
-    public boolean isSuccess(HttpConnection httpConnection) {
+    public boolean isSuccess(Connection connection, LoginInfo loginInfo) {
         return true;
     }
 

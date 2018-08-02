@@ -6,6 +6,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.jsoup.Connection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +17,8 @@ import java.util.Map;
 @Aspect
 public class AspectExecute {
 
+    @Autowired(required = false)
+    FollowFilter followFilter;
     private String lineSeparator = System.lineSeparator();
     private Logger logger = LoggerFactory.getLogger(HttpConnection.class);
 
@@ -43,8 +46,15 @@ public class AspectExecute {
             exception = null;
             try {
                 response = joinPoint.proceed();
+                if (followFilter != null) {
+                    try {
+                        followFilter.doFilter(targetConnection, targetHttpConnection.loginInfo);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
                 if (targetHttpConnection.followProcess != null) {
-                    if (targetHttpConnection.followProcess.isSuccess(targetHttpConnection)) {
+                    if (targetHttpConnection.followProcess.isSuccess(targetConnection, targetHttpConnection.loginInfo)) {
                         break;
                     } else {
                         logRetryLogic(targetConnection, (i + 1), retryCount);
