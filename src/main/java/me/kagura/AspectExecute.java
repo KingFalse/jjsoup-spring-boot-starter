@@ -1,6 +1,5 @@
-package me.kagura.aspect;
+package me.kagura;
 
-import me.kagura.HttpConnection;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -24,53 +23,55 @@ public class AspectExecute {
     //@Around(value = "execution(* me.kagura.*.execute(..))")
     @Around(value = "execution(* org.jsoup.*.execute(..))")
     public Object Around(ProceedingJoinPoint joinPoint) throws Throwable {
-        HttpConnection target = (HttpConnection) joinPoint.getTarget();
+        HttpConnection targetHttpConnection = (HttpConnection) joinPoint.getTarget();
+        Connection targetConnection = (Connection) targetHttpConnection;
+
         //自动判断application/json
-        Connection.Request targetRequest = target.request();
+        Connection.Request targetRequest = targetConnection.request();
         if (targetRequest.method().hasBody() && targetRequest.requestBody() != null) {
             String requestBody = targetRequest.requestBody().trim();
             if ((requestBody.startsWith("{") && requestBody.endsWith("}")) || requestBody.startsWith("[") && requestBody.endsWith("]")) {
-                target.header("Content-Type", "application/json;charset=" + targetRequest.postDataCharset());
+                targetConnection.header("Content-Type", "application/json;charset=" + targetRequest.postDataCharset());
             }
         }
-        logRequest(target);
+        logRequest(targetConnection);
         long startTime = System.currentTimeMillis();
         Object response = null;
         Exception exception = null;
-        int retryCount = target.retryCount > 0 ? target.retryCount : 1;
+        int retryCount = targetHttpConnection.retryCount > 0 ? targetHttpConnection.retryCount : 1;
         for (int i = 0; i < retryCount; i++) {
             exception = null;
             try {
                 response = joinPoint.proceed();
-                if (target.followProcess != null) {
-                    if (target.followProcess.isSuccess(target)) {
+                if (targetHttpConnection.followProcess != null) {
+                    if (targetHttpConnection.followProcess.isSuccess(targetHttpConnection)) {
                         break;
                     } else {
-                        logRetryLogic(target, (i + 1), retryCount);
+                        logRetryLogic(targetConnection, (i + 1), retryCount);
                     }
                 }
                 break;
             } catch (Exception e) {
                 exception = e;
-                logRetryException(target, exception, (i + 1), retryCount);
+                logRetryException(targetConnection, exception, (i + 1), retryCount);
             }
         }
-        if (target.followProcess != null && exception != null) {
-            target.followProcess.doException(exception);
-        } else if (target.followProcess == null && exception != null) {
+        if (targetHttpConnection.followProcess != null && exception != null) {
+            targetHttpConnection.followProcess.doException(exception);
+        } else if (targetHttpConnection.followProcess == null && exception != null) {
             throw exception;
         } else if (response != null) {
-            appendCookie(target, (Connection.Response) response);
-            logResponse(target, System.currentTimeMillis() - startTime);
-            if (target.followProcess != null) {
-                target.followProcess.result = target.followProcess.doProcess(target);
+            appendCookie(targetHttpConnection, (Connection.Response) response);
+            logResponse(targetConnection, System.currentTimeMillis() - startTime);
+            if (targetHttpConnection.followProcess != null) {
+                targetHttpConnection.followProcess.result = targetHttpConnection.followProcess.doProcess(targetConnection, targetHttpConnection.loginInfo);
             }
             return response;
         }
         return null;
     }
 
-    private void logRetryException(HttpConnection target, Exception e, int index, int retryCount) {
+    private void logRetryException(Connection target, Exception e, int index, int retryCount) {
         StringBuffer sb = new StringBuffer(lineSeparator);
         sb.append("RquestFailureRetry-" + index + "/" + retryCount + "----------------------------------->");
         sb.append(target.request());
@@ -84,7 +85,7 @@ public class AspectExecute {
         logger.info(sb.toString());
     }
 
-    private void logRetryLogic(HttpConnection target, int index, int retryCount) {
+    private void logRetryLogic(Connection target, int index, int retryCount) {
         StringBuffer sb = new StringBuffer(lineSeparator);
         sb.append("RquestFailureRetry-" + index + "/" + retryCount + "----------------------------------->");
         sb.append(target.request());
@@ -116,7 +117,7 @@ public class AspectExecute {
      *
      * @param target
      */
-    private void logRequest(HttpConnection target) {
+    private void logRequest(Connection target) {
         Connection.Request req = target.request();
         Connection.Method method = req.method();
         StringBuffer sb = new StringBuffer(lineSeparator);
@@ -157,7 +158,7 @@ public class AspectExecute {
      *
      * @param target
      */
-    private void logResponse(HttpConnection target, long time) {
+    private void logResponse(Connection target, long time) {
         StringBuffer sb = new StringBuffer(lineSeparator);
         Connection.Response res = target.response();
         sb.append("res------------------------------------>");

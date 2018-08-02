@@ -2,6 +2,7 @@ package me.kagura.config;
 
 import javassist.*;
 import me.kagura.HttpConnection;
+import org.jsoup.Connection;
 import org.springframework.context.annotation.*;
 
 import javax.annotation.PostConstruct;
@@ -22,7 +23,7 @@ public class BeanConfig {
         String canonicalName = org.jsoup.helper.HttpConnection.class.getCanonicalName();
         //将org.jsoup.helper.HttpConnection复制一份org.jsoup.helper.HttpConnectionX
         CtClass ctxClass = classPool.getAndRename(canonicalName, canonicalName + "X");
-        //设置新类HttpConnectionX继承抽象类com.example.proxyjsoup.HttpConnection
+        //设置新类HttpConnectionX继承me.kagura.HttpConnection
         ctxClass.setSuperclass(classPool.get(HttpConnection.class.getCanonicalName()));
         CtConstructor[] constructors = ctxClass.getDeclaredConstructors();
         CtConstructor constructor = constructors[0];
@@ -37,8 +38,8 @@ public class BeanConfig {
 
     @Bean
     @Scope("prototype")
-    public HttpConnection getHttpConnection() throws IllegalAccessException, InstantiationException {
-        return (HttpConnection) axClass.newInstance();
+    public Connection getHttpConnection() throws IllegalAccessException, InstantiationException {
+        return (Connection) axClass.newInstance();
     }
 
 }

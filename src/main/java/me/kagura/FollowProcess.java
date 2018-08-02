@@ -1,5 +1,7 @@
 package me.kagura;
 
+import org.jsoup.Connection;
+
 import java.util.Base64;
 
 public abstract class FollowProcess {
@@ -9,14 +11,14 @@ public abstract class FollowProcess {
     public static FollowProcess FollowProcessBase64Image() {
         return new FollowProcess() {
             @Override
-            public String doProcess(HttpConnection httpConnection) {
-                this.result = "data:image/png;base64," + Base64.getEncoder().encodeToString(httpConnection.response().bodyAsBytes());
+            public String doProcess(Connection connection, LoginInfo loginInfo) {
+                this.result = "data:image/png;base64," + Base64.getEncoder().encodeToString(connection.response().bodyAsBytes());
                 return this.result;
             }
         };
     }
 
-    public abstract String doProcess(HttpConnection httpConnection);
+    public abstract String doProcess(Connection connection, LoginInfo loginInfo);
 
     public void doException(Exception e) throws Exception {
         throw e;

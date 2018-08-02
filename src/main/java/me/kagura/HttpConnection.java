@@ -7,47 +7,30 @@ import org.jsoup.Connection;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.net.Proxy;
-import java.net.URL;
 
-/**
- * 其实这个接口没什么卵用，只是为了给这两个方法加下注解
- */
-interface ConnectionX extends Connection {
+public class HttpConnection {
 
-    @Deprecated
-    Connection url(URL url);
-
-    @Deprecated
-    Connection url(String url);
-
-}
-
-public abstract class HttpConnection implements ConnectionX {
-
-    public LoginInfo loginInfo;
+    protected LoginInfo loginInfo;
     //解析器
-    public FollowProcess followProcess;
+    protected FollowProcess followProcess;
     //默认重试次数
-    public int retryCount = 3;
+    protected int retryCount = 3;
 
     @Autowired
     private BeanConfig beanConfig;
     @Autowired(required = false)
     private InitHttpConnection initHttpConnection;
 
-    /**
-     * 用于替代Jsoup.connect(String url);
-     *
-     * @param url
-     * @return
-     */
-    public HttpConnection connect(@NotNull String url) {
+    public Connection connect(@NotNull String url) {
         try {
-            HttpConnection httpConnection = (HttpConnection) beanConfig.getHttpConnection()
+            Connection connection = beanConfig.getHttpConnection()
                     .url(url)
                     .ignoreContentType(true)
                     .ignoreHttpErrors(true);
-            return httpConnection;
+            if (initHttpConnection == null) {
+                return connection;
+            }
+            initHttpConnection.init(connection);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (InstantiationException e) {
@@ -56,27 +39,20 @@ public abstract class HttpConnection implements ConnectionX {
         return null;
     }
 
-    /**
-     * 用于替代Jsoup.connect(String url);
-     * 并使用LoginInfo对象实现cookie自动管理
-     *
-     * @param url
-     * @return
-     */
-    public HttpConnection connect(@NotNull String url, @NotNull LoginInfo loginInfo) {
+    public Connection connect(@NotNull String url, @NotNull LoginInfo loginInfo) {
         try {
-            HttpConnection httpConnection = connect(url);
+            Connection connection = connect(url);
+            if (connection == null) {
+                return null;
+            }
             //从代理类中取出实际对象
-            HttpConnection beanFromProxy = AopTargetUtils.getTargetObject(httpConnection, HttpConnection.class);
+            HttpConnection beanFromProxy = AopTargetUtils.getTargetObject(connection, HttpConnection.class);
             //将LoginInfo跟cookie放入实际对象中
             beanFromProxy.loginInfo = loginInfo;
-            beanFromProxy.proxy((loginInfo != null && loginInfo.Proxy() != null) ? loginInfo.Proxy() : Proxy.NO_PROXY);
-            beanFromProxy.cookies(loginInfo.cookies);
-            if (initHttpConnection == null) {
-                return httpConnection;
-            }
-            initHttpConnection.init(beanFromProxy);
-            return httpConnection;
+            Connection conn = (Connection) beanFromProxy;
+            conn.proxy((loginInfo != null && loginInfo.Proxy() != null) ? loginInfo.Proxy() : Proxy.NO_PROXY);
+            conn.cookies(loginInfo.cookies);
+            return conn;
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (InstantiationException e) {
@@ -87,16 +63,16 @@ public abstract class HttpConnection implements ConnectionX {
         return null;
     }
 
-    public HttpConnection connect(@NotNull String url, @NotNull LoginInfo loginInfo, FollowProcess followProcess) {
-        HttpConnection httpConnection = connect(url, loginInfo);
-        if (httpConnection == null) {
+    public Connection connect(@NotNull String url, @NotNull LoginInfo loginInfo, FollowProcess followProcess) {
+        Connection connection = connect(url, loginInfo);
+        if (connection == null) {
             return null;
         }
         try {
             //从代理类中取出实际对象
-            HttpConnection beanFromProxy = AopTargetUtils.getTargetObject(httpConnection, HttpConnection.class);
+            HttpConnection beanFromProxy = AopTargetUtils.getTargetObject(connection, HttpConnection.class);
             beanFromProxy.followProcess = followProcess;
-            return httpConnection;
+            return connection;
         } catch (Exception e) {
             e.printStackTrace();
         }
