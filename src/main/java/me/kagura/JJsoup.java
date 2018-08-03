@@ -16,7 +16,7 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 
-public abstract class HttpConnection {
+public abstract class JJsoup {
 
     protected LoginInfo loginInfo;
     //解析器
@@ -86,7 +86,7 @@ public abstract class HttpConnection {
                 return null;
             }
             //从代理类中取出实际对象
-            HttpConnection beanFromProxy = AopTargetUtils.getTargetObject(connection, HttpConnection.class);
+            JJsoup beanFromProxy = AopTargetUtils.getTargetObject(connection, JJsoup.class);
             //将LoginInfo跟cookie放入实际对象中
             beanFromProxy.loginInfo = loginInfo;
             Connection conn = (Connection) beanFromProxy;
@@ -110,7 +110,7 @@ public abstract class HttpConnection {
         }
         try {
             //从代理类中取出实际对象
-            HttpConnection beanFromProxy = AopTargetUtils.getTargetObject(connection, HttpConnection.class);
+            JJsoup beanFromProxy = AopTargetUtils.getTargetObject(connection, JJsoup.class);
             beanFromProxy.followProcess = followProcess;
             return connection;
         } catch (Exception e) {

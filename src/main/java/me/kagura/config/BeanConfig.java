@@ -1,7 +1,7 @@
 package me.kagura.config;
 
 import javassist.*;
-import me.kagura.HttpConnection;
+import me.kagura.JJsoup;
 import org.springframework.context.annotation.*;
 
 import javax.annotation.PostConstruct;
@@ -22,8 +22,8 @@ public class BeanConfig {
         String canonicalName = org.jsoup.helper.HttpConnection.class.getCanonicalName();
         //将org.jsoup.helper.HttpConnection复制一份org.jsoup.helper.HttpConnectionX
         CtClass ctxClass = classPool.getAndRename(canonicalName, canonicalName + "X");
-        //设置新类HttpConnectionX继承me.kagura.HttpConnection
-        ctxClass.setSuperclass(classPool.get(HttpConnection.class.getCanonicalName()));
+        //设置新类HttpConnectionX继承me.kagura.JJsoup
+        ctxClass.setSuperclass(classPool.get(JJsoup.class.getCanonicalName()));
         CtConstructor[] constructors = ctxClass.getDeclaredConstructors();
         CtConstructor constructor = constructors[0];
         //修改HttpConnectionX的无参构造方法为public
@@ -37,8 +37,8 @@ public class BeanConfig {
 
     @Bean
     @Scope("prototype")
-    public HttpConnection getHttpConnection() throws IllegalAccessException, InstantiationException {
-        return (HttpConnection) axClass.newInstance();
+    public JJsoup getHttpConnection() throws IllegalAccessException, InstantiationException {
+        return (JJsoup) axClass.newInstance();
     }
 
 }

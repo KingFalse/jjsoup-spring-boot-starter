@@ -20,14 +20,14 @@ public class AspectExecute {
     @Autowired(required = false)
     FollowFilter followFilter;
     private String lineSeparator = System.lineSeparator();
-    private Logger logger = LoggerFactory.getLogger(HttpConnection.class);
+    private Logger logger = LoggerFactory.getLogger(JJsoup.class);
 
     //两个切入点均可
     //@Around(value = "execution(* me.kagura.*.execute(..))")
     @Around(value = "execution(* org.jsoup.*.execute(..))")
     public Object Around(ProceedingJoinPoint joinPoint) throws Throwable {
-        HttpConnection targetHttpConnection = (HttpConnection) joinPoint.getTarget();
-        Connection targetConnection = (Connection) targetHttpConnection;
+        JJsoup targetJJsoup = (JJsoup) joinPoint.getTarget();
+        Connection targetConnection = (Connection) targetJJsoup;
 
         //自动判断application/json
         Connection.Request targetRequest = targetConnection.request();
@@ -41,20 +41,20 @@ public class AspectExecute {
         long startTime = System.currentTimeMillis();
         Object response = null;
         Exception exception = null;
-        int retryCount = targetHttpConnection.retryCount > 0 ? targetHttpConnection.retryCount : 1;
+        int retryCount = targetJJsoup.retryCount > 0 ? targetJJsoup.retryCount : 1;
         for (int i = 0; i < retryCount; i++) {
             exception = null;
             try {
                 response = joinPoint.proceed();
                 if (followFilter != null) {
                     try {
-                        followFilter.doFilter(targetConnection, targetHttpConnection.loginInfo);
+                        followFilter.doFilter(targetConnection, targetJJsoup.loginInfo);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
-                if (targetHttpConnection.followProcess != null) {
-                    if (targetHttpConnection.followProcess.isSuccess(targetConnection, targetHttpConnection.loginInfo)) {
+                if (targetJJsoup.followProcess != null) {
+                    if (targetJJsoup.followProcess.isSuccess(targetConnection, targetJJsoup.loginInfo)) {
                         break;
                     } else {
                         logRetryLogic(targetConnection, (i + 1), retryCount);
@@ -66,15 +66,15 @@ public class AspectExecute {
                 logRetryException(targetConnection, exception, (i + 1), retryCount);
             }
         }
-        if (targetHttpConnection.followProcess != null && exception != null) {
-            targetHttpConnection.followProcess.doException(exception);
-        } else if (targetHttpConnection.followProcess == null && exception != null) {
+        if (targetJJsoup.followProcess != null && exception != null) {
+            targetJJsoup.followProcess.doException(exception);
+        } else if (targetJJsoup.followProcess == null && exception != null) {
             throw exception;
         } else if (response != null) {
-            appendCookie(targetHttpConnection, (Connection.Response) response);
+            appendCookie(targetJJsoup, (Connection.Response) response);
             logResponse(targetConnection, System.currentTimeMillis() - startTime);
-            if (targetHttpConnection.followProcess != null) {
-                targetHttpConnection.followProcess.result = targetHttpConnection.followProcess.doProcess(targetConnection, targetHttpConnection.loginInfo);
+            if (targetJJsoup.followProcess != null) {
+                targetJJsoup.followProcess.result = targetJJsoup.followProcess.doProcess(targetConnection, targetJJsoup.loginInfo);
             }
             return response;
         }
@@ -113,7 +113,7 @@ public class AspectExecute {
      * @param target
      * @param response
      */
-    private void appendCookie(HttpConnection target, Connection.Response response) {
+    private void appendCookie(JJsoup target, Connection.Response response) {
         if (target.loginInfo != null) {
             Map<String, String> cookies = response.cookies();
             if (!cookies.isEmpty()) {
