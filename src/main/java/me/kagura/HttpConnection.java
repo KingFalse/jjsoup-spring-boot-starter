@@ -6,9 +6,17 @@ import me.kagura.util.AopTargetUtils;
 import org.jsoup.Connection;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+import java.io.IOException;
 import java.net.Proxy;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.X509Certificate;
 
-public class HttpConnection {
+public abstract class HttpConnection {
 
     protected LoginInfo loginInfo;
     //解析器
@@ -21,19 +29,51 @@ public class HttpConnection {
     @Autowired(required = false)
     private InitHttpConnection initHttpConnection;
 
+    private static synchronized SSLSocketFactory initUnSecureTSL() throws IOException {
+        // Create a trust manager that does not validate certificate chains
+        final TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
+
+            public void checkClientTrusted(final X509Certificate[] chain, final String authType) {
+            }
+
+            public void checkServerTrusted(final X509Certificate[] chain, final String authType) {
+            }
+
+            public X509Certificate[] getAcceptedIssuers() {
+                return null;
+            }
+        }};
+
+        // Install the all-trusting trust manager
+        final SSLContext sslContext;
+        try {
+            sslContext = SSLContext.getInstance("SSL");
+            sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
+            // Create an ssl socket factory with our all-trusting manager
+            return sslContext.getSocketFactory();
+        } catch (NoSuchAlgorithmException | KeyManagementException e) {
+            throw new IOException("Can't create unsecure trust manager");
+        }
+
+    }
+
     public Connection connect(@NotNull String url) {
         try {
-            Connection connection = beanConfig.getHttpConnection()
-                    .url(url)
+            Connection connection = (Connection) beanConfig.getHttpConnection();
+            connection.url(url)
+                    .sslSocketFactory(initUnSecureTSL())
                     .ignoreContentType(true)
-                    .ignoreHttpErrors(true);
+                    .ignoreHttpErrors(true)
+            ;
             if (initHttpConnection == null) {
                 return connection;
             }
-            initHttpConnection.init(connection);
+            return initHttpConnection.init(connection);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
@@ -52,7 +92,7 @@ public class HttpConnection {
             Connection conn = (Connection) beanFromProxy;
             conn.proxy((loginInfo != null && loginInfo.Proxy() != null) ? loginInfo.Proxy() : Proxy.NO_PROXY);
             conn.cookies(loginInfo.cookies);
-            return conn;
+            return connection;
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (InstantiationException e) {

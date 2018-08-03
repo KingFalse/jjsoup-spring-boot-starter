@@ -2,7 +2,6 @@ package me.kagura.config;
 
 import javassist.*;
 import me.kagura.HttpConnection;
-import org.jsoup.Connection;
 import org.springframework.context.annotation.*;
 
 import javax.annotation.PostConstruct;
@@ -38,8 +37,8 @@ public class BeanConfig {
 
     @Bean
     @Scope("prototype")
-    public Connection getHttpConnection() throws IllegalAccessException, InstantiationException {
-        return (Connection) axClass.newInstance();
+    public HttpConnection getHttpConnection() throws IllegalAccessException, InstantiationException {
+        return (HttpConnection) axClass.newInstance();
     }
 
 }
