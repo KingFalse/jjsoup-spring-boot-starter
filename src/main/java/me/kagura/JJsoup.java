@@ -27,7 +27,7 @@ public abstract class JJsoup {
     @Autowired
     private BeanConfig beanConfig;
     @Autowired(required = false)
-    private InitHttpConnection initHttpConnection;
+    private InitJJsoup initJJsoup;
 
     private static synchronized SSLSocketFactory initUnSecureTSL() throws IOException {
         // Create a trust manager that does not validate certificate chains
@@ -65,10 +65,10 @@ public abstract class JJsoup {
                     .ignoreContentType(true)
                     .ignoreHttpErrors(true)
             ;
-            if (initHttpConnection == null) {
+            if (initJJsoup == null) {
                 return connection;
             }
-            return initHttpConnection.init(connection);
+            return initJJsoup.init(connection);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (InstantiationException e) {
@@ -79,7 +79,7 @@ public abstract class JJsoup {
         return null;
     }
 
-    public Connection connect(@NotNull String url, @NotNull LoginInfo loginInfo) {
+    public Connection connect(@NotNull String url, @NotNull LoginInfo loginInfo, FollowProcess followProcess) {
         try {
             Connection connection = connect(url);
             if (connection == null) {
@@ -92,6 +92,10 @@ public abstract class JJsoup {
             Connection conn = (Connection) beanFromProxy;
             conn.proxy((loginInfo != null && loginInfo.Proxy() != null) ? loginInfo.Proxy() : Proxy.NO_PROXY);
             conn.cookies(loginInfo.cookies);
+            if (followProcess == null) {
+                return connection;
+            }
+            beanFromProxy.followProcess = followProcess;
             return connection;
         } catch (IllegalAccessException e) {
             e.printStackTrace();
@@ -103,20 +107,8 @@ public abstract class JJsoup {
         return null;
     }
 
-    public Connection connect(@NotNull String url, @NotNull LoginInfo loginInfo, FollowProcess followProcess) {
-        Connection connection = connect(url, loginInfo);
-        if (connection == null) {
-            return null;
-        }
-        try {
-            //从代理类中取出实际对象
-            JJsoup beanFromProxy = AopTargetUtils.getTargetObject(connection, JJsoup.class);
-            beanFromProxy.followProcess = followProcess;
-            return connection;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
+    public Connection connect(@NotNull String url, @NotNull LoginInfo loginInfo) {
+        return connect(url, loginInfo, null);
     }
 
 }

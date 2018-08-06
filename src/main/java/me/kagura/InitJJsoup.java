@@ -2,6 +2,6 @@ package me.kagura;
 
 import org.jsoup.Connection;
 
-public interface InitHttpConnection {
+public interface InitJJsoup {
     Connection init(Connection connection);
 }
