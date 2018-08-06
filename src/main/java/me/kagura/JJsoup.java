@@ -27,7 +27,7 @@ public abstract class JJsoup {
     @Autowired
     private BeanConfig beanConfig;
     @Autowired(required = false)
-    private InitJJsoup initJJsoup;
+    private InitConnection initConn;
 
     private static synchronized SSLSocketFactory initUnSecureTSL() throws IOException {
         // Create a trust manager that does not validate certificate chains
@@ -65,10 +65,10 @@ public abstract class JJsoup {
                     .ignoreContentType(true)
                     .ignoreHttpErrors(true)
             ;
-            if (initJJsoup == null) {
+            if (initConn == null) {
                 return connection;
             }
-            return initJJsoup.init(connection);
+            return initConn.init(connection);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (InstantiationException e) {
