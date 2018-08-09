@@ -30,7 +30,7 @@ public class AspectLoginInfo {
         Class[] parameterTypes = methodSignature.getParameterTypes();
         for (int i = 0; i < parameterTypes.length; i++) {
             if (parameterTypes[i].equals(LoginInfo.class)) {
-                loginInfoSerializable.resetLoginInfo((LoginInfo) joinPoint.getArgs()[i]);
+                loginInfoSerializable.setLoginInfo((LoginInfo) joinPoint.getArgs()[i]);
                 break;
             }
         }

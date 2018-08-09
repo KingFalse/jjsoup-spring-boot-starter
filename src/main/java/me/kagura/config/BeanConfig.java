@@ -2,6 +2,8 @@ package me.kagura.config;
 
 import javassist.*;
 import me.kagura.JJsoup;
+import me.kagura.LoginInfoSerializable;
+import me.kagura.impl.DefaultLoginInfoSerializable;
 import org.springframework.context.annotation.*;
 
 import javax.annotation.PostConstruct;
@@ -33,6 +35,16 @@ public class BeanConfig {
         ctxClass.removeMethod(connect);
         //编译并加载HttpConnectionX
         axClass = ctxClass.toClass();
+    }
+
+    @Bean
+    public LoginInfoSerializable initDefaultLoginInfoSerializable() {
+        try {
+            Class.forName("org.springframework.data.redis.core.StringRedisTemplate");
+        } catch (Exception e) {
+            return null;
+        }
+        return new DefaultLoginInfoSerializable();
     }
 
     @Bean
