@@ -67,7 +67,7 @@ public class AspectExecute {
             }
         }
         if (targetJJsoup.followProcess != null && exception != null) {
-            targetJJsoup.followProcess.doException(exception);
+            targetJJsoup.followProcess.doException(targetConnection, targetJJsoup.loginInfo, exception);
         } else if (targetJJsoup.followProcess == null && exception != null) {
             throw exception;
         } else if (response != null) {

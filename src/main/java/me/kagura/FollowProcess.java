@@ -20,7 +20,7 @@ public abstract class FollowProcess {
 
     public abstract String doProcess(Connection connection, LoginInfo loginInfo);
 
-    public void doException(Exception e) throws Exception {
+    public void doException(Connection connection, LoginInfo loginInfo, Exception e) throws Exception {
         throw e;
     }
 

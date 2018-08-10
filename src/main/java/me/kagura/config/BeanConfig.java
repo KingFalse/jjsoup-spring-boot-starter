@@ -40,7 +40,7 @@ public class BeanConfig {
 
     @Conditional(LoginInfoSerializableCondition.class)
     @Bean
-    public LoginInfoSerializable initDefaultLoginInfoSerializable() throws NoSuchMethodException, ClassNotFoundException {
+    public LoginInfoSerializable initDefaultLoginInfoSerializable() {
         try {
             Class.forName("org.springframework.data.redis.core.StringRedisTemplate");
         } catch (Exception e) {
