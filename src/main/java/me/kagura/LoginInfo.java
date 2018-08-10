@@ -42,6 +42,7 @@ public class LoginInfo implements Serializable {
 
     public LoginInfo Proxy(Proxy proxy) {
         this.kProxy = new KProxy(proxy.type(), proxy.address());
+        this.proxy = proxy;
         return this;
     }
 
