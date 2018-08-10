@@ -2,23 +2,28 @@ package me.kagura.impl;
 
 import me.kagura.LoginInfo;
 import me.kagura.LoginInfoSerializable;
-import me.kagura.util.SpringContextUtils;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 import java.lang.reflect.Method;
 import java.util.Base64;
 import java.util.concurrent.TimeUnit;
 
-public class DefaultLoginInfoSerializable implements LoginInfoSerializable {
+public class DefaultRedisLoginInfoSerializable implements LoginInfoSerializable, ApplicationContextAware {
+
+    ApplicationContext applicationContext;
+    Object stringRedisTemplate;
+    Class<?> jdkSerializationRedisSerializer;
+    Method serialize;
+    Method deserialize;
 
     @Override
     public void setLoginInfo(LoginInfo loginInfo) {
         try {
-            Class<?> jdkSerializationRedisSerializer = Class.forName("org.springframework.data.redis.serializer.JdkSerializationRedisSerializer");
-            Method serialize = jdkSerializationRedisSerializer.getMethod("serialize", Object.class);
             byte[] bytes = (byte[]) serialize.invoke(jdkSerializationRedisSerializer.newInstance(), loginInfo);
             String loginInfoSerializeString = Base64.getEncoder().encodeToString(bytes);
 
-            Object stringRedisTemplate = SpringContextUtils.getBeanById("stringRedisTemplate");
             Method opsForValue = stringRedisTemplate.getClass().getMethod("opsForValue");
             Object valueOperations = opsForValue.invoke(stringRedisTemplate, null);
             Method set = valueOperations.getClass().getMethod("set", Object.class, Object.class, long.class, TimeUnit.class);
@@ -32,7 +37,6 @@ public class DefaultLoginInfoSerializable implements LoginInfoSerializable {
     @Override
     public LoginInfo getLoginInfo(String key) {
         try {
-            Object stringRedisTemplate = SpringContextUtils.getBeanById("stringRedisTemplate");
             Method opsForValue = stringRedisTemplate.getClass().getMethod("opsForValue");
             Object valueOperations = opsForValue.invoke(stringRedisTemplate, null);
             Method set = valueOperations.getClass().getMethod("get", Object.class);
@@ -40,13 +44,24 @@ public class DefaultLoginInfoSerializable implements LoginInfoSerializable {
             String val = (String) set.invoke(valueOperations, key);
             byte[] decode = Base64.getDecoder().decode(val);
 
-            Class<?> jdkSerializationRedisSerializer = Class.forName("org.springframework.data.redis.serializer.JdkSerializationRedisSerializer");
-            Method deserialize = jdkSerializationRedisSerializer.getMethod("deserialize", byte[].class);
             LoginInfo loginInfo = (LoginInfo) deserialize.invoke(jdkSerializationRedisSerializer.newInstance(), decode);
             return loginInfo;
         } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
+        try {
+            stringRedisTemplate = applicationContext.getBean("stringRedisTemplate");
+            jdkSerializationRedisSerializer = Class.forName("org.springframework.data.redis.serializer.JdkSerializationRedisSerializer");
+            serialize = jdkSerializationRedisSerializer.getMethod("serialize", Object.class);
+            deserialize = jdkSerializationRedisSerializer.getMethod("deserialize", byte[].class);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -3,8 +3,9 @@ package me.kagura.config;
 import javassist.*;
 import me.kagura.JJsoup;
 import me.kagura.LoginInfoSerializable;
-import me.kagura.impl.DefaultLoginInfoSerializable;
+import me.kagura.impl.DefaultRedisLoginInfoSerializable;
 import org.springframework.context.annotation.*;
+import org.springframework.core.type.AnnotatedTypeMetadata;
 
 import javax.annotation.PostConstruct;
 
@@ -37,14 +38,15 @@ public class BeanConfig {
         axClass = ctxClass.toClass();
     }
 
+    @Conditional(LoginInfoSerializableCondition.class)
     @Bean
-    public LoginInfoSerializable initDefaultLoginInfoSerializable() {
+    public LoginInfoSerializable initDefaultLoginInfoSerializable() throws NoSuchMethodException, ClassNotFoundException {
         try {
             Class.forName("org.springframework.data.redis.core.StringRedisTemplate");
         } catch (Exception e) {
             return null;
         }
-        return new DefaultLoginInfoSerializable();
+        return new DefaultRedisLoginInfoSerializable();
     }
 
     @Bean
@@ -53,4 +55,16 @@ public class BeanConfig {
         return (JJsoup) axClass.newInstance();
     }
 
+}
+
+class LoginInfoSerializableCondition implements Condition {
+    @Override
+    public boolean matches(ConditionContext conditionContext, AnnotatedTypeMetadata annotatedTypeMetadata) {
+        try {
+            conditionContext.getBeanFactory().getBean(LoginInfoSerializable.class);
+            return false;
+        } catch (Exception e) {
+        }
+        return true;
+    }
 }
