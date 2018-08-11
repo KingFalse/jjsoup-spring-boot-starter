@@ -39,9 +39,9 @@ public class DefaultRedisLoginInfoSerializable implements LoginInfoSerializable,
             Object redisTemplate = applicationContext.getBean("redisTemplate");
             Method opsForValue = redisTemplate.getClass().getMethod("opsForValue");
             valueOperations = opsForValue.invoke(redisTemplate);
-            Method set = valueOperations.getClass().getMethod("set", Object.class, Object.class, long.class, TimeUnit.class);
+            set = valueOperations.getClass().getMethod("set", Object.class, Object.class, long.class, TimeUnit.class);
             set.setAccessible(true);
-            Method get = valueOperations.getClass().getMethod("get", Object.class);
+            get = valueOperations.getClass().getMethod("get", Object.class);
             get.setAccessible(true);
         } catch (Exception e) {
             e.printStackTrace();
