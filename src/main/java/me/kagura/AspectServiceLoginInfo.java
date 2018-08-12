@@ -14,11 +14,11 @@ import org.springframework.stereotype.Component;
 @Order(99)
 @Component
 @Aspect
-public class AspectLoginInfo {
+public class AspectServiceLoginInfo {
 
     @Autowired(required = false)
     LoginInfoSerializable loginInfoSerializable = null;
-    Logger logger = LoggerFactory.getLogger(AspectLoginInfo.class);
+    Logger logger = LoggerFactory.getLogger(AspectServiceLoginInfo.class);
 
     @AfterReturning(value = "within(@org.springframework.stereotype.Service *)", argNames = "joinPoint")
     public void AfterReturning(JoinPoint joinPoint) {
