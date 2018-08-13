@@ -20,7 +20,7 @@ public class AspectServiceLoginInfo {
     LoginInfoSerializable loginInfoSerializable = null;
     Logger logger = LoggerFactory.getLogger(AspectServiceLoginInfo.class);
 
-    @AfterReturning(value = "within(@org.springframework.stereotype.Service *)", argNames = "joinPoint")
+    @AfterReturning(value = "within(@org.springframework.stereotype.Service *) && args(*,..)", argNames = "joinPoint")
     public void AfterReturning(JoinPoint joinPoint) {
         if (loginInfoSerializable == null) {
             return;
