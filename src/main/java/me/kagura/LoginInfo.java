@@ -12,7 +12,7 @@ import java.util.*;
 public class LoginInfo implements Serializable {
 
     //任务ID，也可不单独定义，放入extras中亦可
-    public final String traceID;
+    public final String key;
     //用于存放临时变量的线程安全的变量池
     public final Map<String, Object> extras = Collections.synchronizedNavigableMap(new TreeMap<>());
     //用于存放cookie的线程安全的cookie池
@@ -23,20 +23,20 @@ public class LoginInfo implements Serializable {
     private transient Proxy proxy;
 
     public LoginInfo() {
-        this.traceID = UUID.randomUUID().toString();
+        this.key = UUID.randomUUID().toString();
     }
 
-    public LoginInfo(String traceID) {
-        this.traceID = traceID;
+    public LoginInfo(String key) {
+        this.key = key;
     }
 
-    public LoginInfo(String traceID, String host, int port) {
-        this.traceID = traceID;
+    public LoginInfo(String key, String host, int port) {
+        this.key = key;
         this.kProxy = new KProxy(Proxy.Type.HTTP, InetSocketAddress.createUnresolved(host, port));
     }
 
-    public LoginInfo(String traceID, Proxy proxy) {
-        this.traceID = traceID;
+    public LoginInfo(String key, Proxy proxy) {
+        this.key = key;
         this.kProxy = new KProxy(proxy.type(), proxy.address());
     }
 
@@ -66,7 +66,7 @@ public class LoginInfo implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         LoginInfo loginInfo = (LoginInfo) o;
-        return Objects.equals(traceID, loginInfo.traceID) &&
+        return Objects.equals(key, loginInfo.key) &&
                 Objects.equals(extras, loginInfo.extras) &&
                 Objects.equals(cookies, loginInfo.cookies) &&
                 Objects.equals(proxy, loginInfo.proxy);
@@ -75,16 +75,16 @@ public class LoginInfo implements Serializable {
     @Override
     public int hashCode() {
 
-        return Objects.hash(traceID, extras, cookies, proxy);
+        return Objects.hash(key, extras, cookies, proxy);
     }
 
     @Override
     public String toString() {
         return "LoginInfo{" +
-                "traceID='" + traceID + '\'' +
+                "key='" + key + '\'' +
                 ", extras=" + extras +
                 ", cookies=" + cookies +
-                ", proxy=" + proxy +
+                ", proxy=" + kProxy +
                 '}';
     }
 }

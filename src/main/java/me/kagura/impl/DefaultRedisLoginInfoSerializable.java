@@ -19,7 +19,7 @@ public class DefaultRedisLoginInfoSerializable implements LoginInfoSerializable,
 
     @Override
     public void setLoginInfo(LoginInfo loginInfo) throws InvocationTargetException, IllegalAccessException {
-        set.invoke(valueOperations, loginInfo.traceID, loginInfo, 1000, TimeUnit.SECONDS);
+        set.invoke(valueOperations, loginInfo.key, loginInfo, 1000, TimeUnit.SECONDS);
 
     }
 
