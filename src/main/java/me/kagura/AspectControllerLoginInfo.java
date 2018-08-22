@@ -37,14 +37,14 @@ public class AspectControllerLoginInfo {
         int loginInfoIndex = -1;
         for (int i = 0; i < parameters.length; i++) {
             Parameter parameter = parameters[i];
+            if (annoLoginInfoKey != null && parameterNames[i].equals(annoLoginInfoKey.value())) {
+                loginInfoKeyIndex = i;
+            }
             if (parameter.getAnnotation(LoginInfoKey.class) != null) {
                 loginInfoKeyIndex = i;
             }
             if (parameter.getType().equals(LoginInfo.class)) {
                 loginInfoIndex = i;
-            }
-            if (annoLoginInfoKey != null && parameterNames[i].equals(annoLoginInfoKey.value())) {
-                loginInfoKeyIndex = i;
             }
         }
         if (loginInfoIndex > -1 && loginInfoKeyIndex > -1) {
