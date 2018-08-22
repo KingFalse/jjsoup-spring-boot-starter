@@ -6,6 +6,8 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
@@ -133,13 +135,20 @@ public class AspectJSONBodyField {
 
 class ConditionalAspectJSONBodyField implements Condition {
 
+    Logger logger = LoggerFactory.getLogger(JJsoup.class);
+
     @Override
     public boolean matches(ConditionContext conditionContext, AnnotatedTypeMetadata annotatedTypeMetadata) {
         try {
             Class.forName("org.springframework.web.bind.annotation.RequestBody");
+        } catch (Exception e) {
+            return false;
+        }
+        try {
             Class.forName("com.alibaba.fastjson.JSONPath");
             return true;
         } catch (Exception e) {
+            logger.info("If you want to use @JSONBodyField please add fastjson dependencies.");
             return false;
         }
 
