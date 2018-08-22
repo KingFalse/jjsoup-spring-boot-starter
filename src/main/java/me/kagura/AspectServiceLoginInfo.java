@@ -1,5 +1,6 @@
 package me.kagura;
 
+import me.kagura.anno.LoginInfoSolidify;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.AfterThrowing;
@@ -25,8 +26,20 @@ public class AspectServiceLoginInfo {
         if (loginInfoSerializable == null) {
             return;
         }
-        logger.info("LoginInfo 自动保存...");
         MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
+        LoginInfoSolidify loginInfoSolidify = methodSignature.getMethod().getDeclaringClass().getAnnotation(LoginInfoSolidify.class);
+        boolean solidify = true;
+        if (loginInfoSolidify != null) {
+            solidify = loginInfoSolidify.value();
+        }
+        loginInfoSolidify = methodSignature.getMethod().getAnnotation(LoginInfoSolidify.class);
+        if (loginInfoSolidify != null) {
+            solidify = loginInfoSolidify.value();
+        }
+        if (!solidify) {
+            return;
+        }
+        logger.info("LoginInfo 自动保存...");
         Class[] parameterTypes = methodSignature.getParameterTypes();
         for (int i = 0; i < parameterTypes.length; i++) {
             if (parameterTypes[i].equals(LoginInfo.class)) {
