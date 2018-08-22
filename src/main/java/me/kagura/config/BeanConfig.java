@@ -38,7 +38,7 @@ public class BeanConfig {
         axClass = ctxClass.toClass();
     }
 
-    @Conditional(LoginInfoSerializableCondition.class)
+    @Conditional(ConditionalLoginInfoSerializable.class)
     @Bean
     public LoginInfoSerializable initDefaultLoginInfoSerializable() {
         try {
@@ -57,7 +57,7 @@ public class BeanConfig {
 
 }
 
-class LoginInfoSerializableCondition implements Condition {
+class ConditionalLoginInfoSerializable implements Condition {
     @Override
     public boolean matches(ConditionContext conditionContext, AnnotatedTypeMetadata annotatedTypeMetadata) {
         try {

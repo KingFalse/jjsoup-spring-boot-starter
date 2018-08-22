@@ -29,6 +29,7 @@
         <!-- dependencies -->
         <spring-boot.version>1.5.0.RELEASE</spring-boot.version>
         <javassist.version>3.22.0-GA</javassist.version>
+        <commons-io.version>2.6</commons-io.version>
         <istack.version>3.0.5</istack.version>
         <jsoup.version>1.11.3</jsoup.version>
 
@@ -64,6 +65,11 @@
             <groupId>com.sun.istack</groupId>
             <artifactId>istack-commons-runtime</artifactId>
             <version>${istack.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>${commons-io.version}</version>
         </dependency>
     </dependencies>
 
