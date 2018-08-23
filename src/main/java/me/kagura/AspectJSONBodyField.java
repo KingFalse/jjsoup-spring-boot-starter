@@ -45,7 +45,11 @@ public class AspectJSONBodyField {
         if (!"POST".equals(method_getMethod.invoke(request, null))) {
             return joinPoint.proceed();
         }
-        if (!((String) method_getHeader.invoke(request, "Content-Type")).contains("application/json")) {
+        Object contentType = method_getHeader.invoke(request, "Content-Type");
+        if (contentType == null) {
+            return joinPoint.proceed();
+        }
+        if (!((String) contentType).contains("application/json")) {
             return joinPoint.proceed();
         }
         MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
