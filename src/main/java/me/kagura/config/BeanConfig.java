@@ -34,6 +34,36 @@ public class BeanConfig {
         //删除静态方法connect(String url);
         CtMethod connect = ctxClass.getDeclaredMethod("connect");
         ctxClass.removeMethod(connect);
+
+        ////--------------------------TEST-----------------------------/////
+        CtMethod execute = ctxClass.getDeclaredMethod("execute");
+        execute.setName("execute$");
+        CtMethod executeNew = CtNewMethod.copy(execute, "execute", ctxClass, null);
+        executeNew.setBody("" +
+                "{" +
+                "me.kagura.AopExecute.contentTypeJson(this);" +
+                "me.kagura.AopExecute.logRequest(this);" +
+                "long startTime = System.currentTimeMillis();" +
+                "Exception exception = null;" +
+                "   for (int i = 0; i < me.kagura.AopExecute.retryCount(this); i++) {" +
+                "       exception = null;" +
+                "       try {" +
+                "           execute$();" +
+                "           me.kagura.AopExecute.followFilter(this);" +
+                "           boolean isSuccess = me.kagura.AopExecute.followProcess_isSuccess(this,i);" +
+                "           if (isSuccess) {" +
+                "               break;" +
+                "           }" +
+                "       } catch (Exception e) {" +
+                "           exception = e;" +
+                "       }" +
+                "   }" +
+                "me.kagura.AopExecute.after(this,exception,startTime);" +
+                "return this.res;" +
+                "}");
+        ctxClass.addMethod(executeNew);
+        ////--------------------------TEST-----------------------------/////
+
         //编译并加载HttpConnectionX
         axClass = ctxClass.toClass();
     }
