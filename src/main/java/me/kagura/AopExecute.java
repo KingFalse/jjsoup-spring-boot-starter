@@ -149,7 +149,7 @@ public class AopExecute {
         logger.info(sb.toString());
     }
 
-    @Autowired
+    @Autowired(required = false)
     public void initFollowFilter(FollowFilter _followFilter) {
         followFilter = _followFilter;
     }
