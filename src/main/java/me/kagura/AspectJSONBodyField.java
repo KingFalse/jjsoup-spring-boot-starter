@@ -80,7 +80,7 @@ public class AspectJSONBodyField {
                 String fieldPath = annotation.value().equals("") ? "$." + parameterNames[i] : annotation.value();
                 Object val = read(body, fieldPath);
                 if (parameter.getType().equals(String.class)) {
-                    args[i] = String.valueOf(read(body, fieldPath));
+                    args[i] = val;
                 } else if (parameter.getType().equals(Integer.class)) {
                     if (val instanceof Integer) {
                         args[i] = val;

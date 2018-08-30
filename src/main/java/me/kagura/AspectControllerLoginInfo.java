@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Parameter;
 
-@Order(99)
+@Order(-1101)
 @Component
 @Aspect
 public class AspectControllerLoginInfo {
