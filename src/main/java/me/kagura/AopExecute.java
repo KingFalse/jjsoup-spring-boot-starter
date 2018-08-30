@@ -104,7 +104,7 @@ public class AopExecute {
 
     public static void after(Connection connection, Exception e, long startTime) throws Exception {
         JJsoup jJsoup = (JJsoup) connection;
-        if (jJsoup.followProcess != null && jJsoup != null) {
+        if (jJsoup.followProcess != null && e != null) {
             jJsoup.followProcess.doException(connection, jJsoup.loginInfo, e);
         } else if (jJsoup.followProcess == null && e != null) {
             throw e;

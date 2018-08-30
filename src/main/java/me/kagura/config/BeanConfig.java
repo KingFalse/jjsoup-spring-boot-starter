@@ -45,7 +45,7 @@ public class BeanConfig {
                 "me.kagura.AopExecute.logRequest(this);" +
                 "long startTime = System.currentTimeMillis();" +
                 "Exception exception = null;" +
-                "   for (int i = 0; i < me.kagura.AopExecute.retryCount(this); i++) {" +
+                "   for (int i = 1; i <= me.kagura.AopExecute.retryCount(this); i++) {" +
                 "       exception = null;" +
                 "       try {" +
                 "           execute$();" +
@@ -71,11 +71,6 @@ public class BeanConfig {
     @Conditional(ConditionalLoginInfoSerializable.class)
     @Bean
     public LoginInfoSerializable initDefaultLoginInfoSerializable() {
-        try {
-            Class.forName("org.springframework.data.redis.core.StringRedisTemplate");
-        } catch (Exception e) {
-            return null;
-        }
         return new DefaultRedisLoginInfoSerializable();
     }
 
@@ -94,6 +89,11 @@ class ConditionalLoginInfoSerializable implements Condition {
             conditionContext.getBeanFactory().getBean(LoginInfoSerializable.class);
             return false;
         } catch (Exception e) {
+        }
+        try {
+            Class.forName("org.springframework.data.redis.core.RedisTemplate");
+        } catch (Exception e) {
+            return false;
         }
         return true;
     }

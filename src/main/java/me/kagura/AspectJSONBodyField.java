@@ -149,7 +149,7 @@ class ConditionalAspectJSONBodyField implements Condition {
             Class.forName("com.alibaba.fastjson.JSONPath");
             return true;
         } catch (Exception e) {
-            logger.info("If you want to use @JSONBodyField please add fastjson dependencies.");
+            logger.warn("If you want to use @JSONBodyField please add fastjson dependencies.");
             return false;
         }
 
