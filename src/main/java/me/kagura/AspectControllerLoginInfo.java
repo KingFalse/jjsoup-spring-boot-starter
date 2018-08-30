@@ -6,13 +6,18 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Condition;
+import org.springframework.context.annotation.ConditionContext;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Parameter;
 
 @Order(-1101)
+@Conditional(ConditionalAnnoRestController.class)
 @Component
 @Aspect
 public class AspectControllerLoginInfo {
@@ -55,5 +60,17 @@ public class AspectControllerLoginInfo {
 
         }
         return joinPoint.proceed();
+    }
+}
+
+class ConditionalAnnoRestController implements Condition {
+    @Override
+    public boolean matches(ConditionContext conditionContext, AnnotatedTypeMetadata annotatedTypeMetadata) {
+        try {
+            Class.forName("org.springframework.web.bind.annotation.RestController");
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }
