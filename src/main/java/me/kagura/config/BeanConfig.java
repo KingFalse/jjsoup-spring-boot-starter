@@ -86,14 +86,14 @@ class ConditionalLoginInfoSerializable implements Condition {
     @Override
     public boolean matches(ConditionContext conditionContext, AnnotatedTypeMetadata annotatedTypeMetadata) {
         try {
-            conditionContext.getBeanFactory().getBean(LoginInfoSerializable.class);
-            return false;
-        } catch (Exception e) {
-        }
-        try {
             Class.forName("org.springframework.data.redis.core.RedisTemplate");
         } catch (Exception e) {
             return false;
+        }
+        try {
+            conditionContext.getBeanFactory().getBean(LoginInfoSerializable.class);
+            return false;
+        } catch (Exception e) {
         }
         return true;
     }
