@@ -68,7 +68,8 @@ public abstract class JJsoup {
             if (initConn == null) {
                 return connection;
             }
-            return initConn.init(connection);
+            initConn.init(connection);
+            return connection;
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (InstantiationException e) {

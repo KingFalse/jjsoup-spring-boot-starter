@@ -35,7 +35,7 @@ public class BeanConfig {
         CtMethod connect = ctxClass.getDeclaredMethod("connect");
         ctxClass.removeMethod(connect);
 
-        ////--------------------------TEST-----------------------------/////
+        //替换原execute方法
         CtMethod execute = ctxClass.getDeclaredMethod("execute");
         execute.setName("execute$");
         CtMethod executeNew = CtNewMethod.copy(execute, "execute", ctxClass, null);
@@ -62,7 +62,6 @@ public class BeanConfig {
                 "return this.res;" +
                 "}");
         ctxClass.addMethod(executeNew);
-        ////--------------------------TEST-----------------------------/////
 
         //编译并加载HttpConnectionX
         axClass = ctxClass.toClass();
