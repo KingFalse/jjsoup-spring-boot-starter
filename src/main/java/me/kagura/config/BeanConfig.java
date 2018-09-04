@@ -34,6 +34,35 @@ public class BeanConfig {
         //删除静态方法connect(String url);
         CtMethod connect = ctxClass.getDeclaredMethod("connect");
         ctxClass.removeMethod(connect);
+
+        //替换原execute方法
+        CtMethod execute = ctxClass.getDeclaredMethod("execute");
+        execute.setName("execute$");
+        CtMethod executeNew = CtNewMethod.copy(execute, "execute", ctxClass, null);
+        executeNew.setBody("" +
+                "{" +
+                "me.kagura.AopExecute.contentTypeJson(this);" +
+                "me.kagura.AopExecute.logRequest(this);" +
+                "long startTime = System.currentTimeMillis();" +
+                "Exception exception = null;" +
+                "   for (int i = 1; i <= me.kagura.AopExecute.retryCount(this); i++) {" +
+                "       exception = null;" +
+                "       try {" +
+                "           execute$();" +
+                "           me.kagura.AopExecute.followFilter(this);" +
+                "           boolean isSuccess = me.kagura.AopExecute.followProcess_isSuccess(this,i);" +
+                "           if (isSuccess) {" +
+                "               break;" +
+                "           }" +
+                "       } catch (Exception e) {" +
+                "           exception = e;" +
+                "       }" +
+                "   }" +
+                "me.kagura.AopExecute.after(this,exception,startTime);" +
+                "return this.res;" +
+                "}");
+        ctxClass.addMethod(executeNew);
+
         //编译并加载HttpConnectionX
         axClass = ctxClass.toClass();
     }
@@ -41,11 +70,6 @@ public class BeanConfig {
     @Conditional(ConditionalLoginInfoSerializable.class)
     @Bean
     public LoginInfoSerializable initDefaultLoginInfoSerializable() {
-        try {
-            Class.forName("org.springframework.data.redis.core.StringRedisTemplate");
-        } catch (Exception e) {
-            return null;
-        }
         return new DefaultRedisLoginInfoSerializable();
     }
 
@@ -60,6 +84,11 @@ public class BeanConfig {
 class ConditionalLoginInfoSerializable implements Condition {
     @Override
     public boolean matches(ConditionContext conditionContext, AnnotatedTypeMetadata annotatedTypeMetadata) {
+        try {
+            Class.forName("org.springframework.data.redis.core.RedisTemplate");
+        } catch (Exception e) {
+            return false;
+        }
         try {
             conditionContext.getBeanFactory().getBean(LoginInfoSerializable.class);
             return false;

@@ -27,6 +27,8 @@ import java.lang.reflect.Parameter;
 @Aspect
 public class AspectJSONBodyField {
 
+    Logger logger = LoggerFactory.getLogger(AspectJSONBodyField.class);
+
     Class<?> class_RequestBody = Class.forName("org.springframework.web.bind.annotation.RequestBody");
     Method method_getRequestAttributes = Class.forName("org.springframework.web.context.request.RequestContextHolder").getDeclaredMethod("getRequestAttributes", null);
     Method method_getRequest = Class.forName("org.springframework.web.context.request.ServletRequestAttributes").getDeclaredMethod("getRequest", null);
@@ -46,7 +48,11 @@ public class AspectJSONBodyField {
             return joinPoint.proceed();
         }
         Object contentType = method_getHeader.invoke(request, "Content-Type");
-        if (contentType == null || !((String) contentType).contains("application/json")) {
+        if (contentType == null) {
+            logger.error("Please set the request header: \"Content-Type\"");
+            return joinPoint.proceed();
+        }
+        if (!((String) contentType).contains("application/json")) {
             return joinPoint.proceed();
         }
         MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
@@ -80,7 +86,7 @@ public class AspectJSONBodyField {
                 String fieldPath = annotation.value().equals("") ? "$." + parameterNames[i] : annotation.value();
                 Object val = read(body, fieldPath);
                 if (parameter.getType().equals(String.class)) {
-                    args[i] = String.valueOf(read(body, fieldPath));
+                    args[i] = val;
                 } else if (parameter.getType().equals(Integer.class)) {
                     if (val instanceof Integer) {
                         args[i] = val;
@@ -149,7 +155,7 @@ class ConditionalAspectJSONBodyField implements Condition {
             Class.forName("com.alibaba.fastjson.JSONPath");
             return true;
         } catch (Exception e) {
-            logger.info("If you want to use @JSONBodyField please add fastjson dependencies.");
+            logger.warn("If you want to use @JSONBodyField please add fastjson dependencies.");
             return false;
         }
 

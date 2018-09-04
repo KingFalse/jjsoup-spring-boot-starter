@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-@Order(99)
+@Order(-1100)
 @Component
 @Aspect
 public class AspectServiceLoginInfo {
