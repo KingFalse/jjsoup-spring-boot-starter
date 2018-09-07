@@ -5,7 +5,7 @@
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/me.kagura/jjsoup-spring-boot-starter/badge.svg)](https://maven-badges.herokuapp.com/maven-central/me.kagura/jjsoup-spring-boot-starter) 
 
 ## 如何使用：
-在spring boot项目中引入：
+**在spring boot项目中引入：**
 ```xml
 <dependency>
     <groupId>me.kagura</groupId>
@@ -24,7 +24,7 @@
     <artifactId>spring-boot-starter-data-redis</artifactId>
 </dependency>
 ```
-快速开始：
+**快速开始：**
 ```java
 import me.kagura.FollowProcess;
 import me.kagura.JJsoup;
@@ -121,8 +121,8 @@ public class JJsoupTest {
 }
 ```
 ## 依赖版本：
-> * spring boot 建议1.5以上
-> * jsoup 1.9.1 以上(默认最新，目前1.11.3)
+> * **spring boot 建议1.5以上**
+> * **jsoup 1.9.1 以上(默认最新，目前1.11.3)**
 
 
 ## @JSONBodyField
