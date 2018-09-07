@@ -53,7 +53,7 @@ public class JJsoupTest {
         System.err.println(document);
 
         // 携带Logininfo
-        LoginInfo loginInfo = new LoginInfo();// new LoginInfo();随机生成UUID作为key，new LoginInfo("xxx");指定key
+        LoginInfo loginInfo = new LoginInfo();//随机生成UUID作为key，new LoginInfo("xxx");指定key
         // String              loginInfo.key;                一个字符串值，在序列化时作为key使用
         // Map<String, String> loginInfo.cookies;            用于存放cookie
         // Proxy               loginInfo.Proxy(Proxy proxy); 用于设置代理
