@@ -1,6 +1,6 @@
 # jjsoup-spring-boot-starter
 
-**jjsoups是对jsoup的无侵入封装，使它更好的适合于网络爬虫开发[Powered by Jsoup](https://github.com/jhy/jsoup)**
+**jjsoup-spring-boot-starter是对jsoup的无侵入封装，使它更好的适合于网络爬虫开发[Powered by Jsoup](https://github.com/jhy/jsoup)**
 
 **Demo项目：[https://github.com/KingFalse/didi-app-auth-crawler](https://github.com/KingFalse/didi-app-auth-crawler)**
 
