@@ -41,7 +41,6 @@ import java.io.IOException;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@AutoConfigureMockMvc
 public class JJsoupTest {
     @Autowired
     JJsoup jJsoup;
