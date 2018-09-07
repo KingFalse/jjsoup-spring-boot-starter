@@ -176,6 +176,43 @@ class AuthController {
 > * **jjsoup自带了一个redis序列化实现，您只需要添加spring-boot-starter-data-redis即可**
 > * **如果您的项目没有使用redis进行缓存，或者您想自定义缓存策略时可以实现me.kagura.LoginInfoSerializable接口并添加@Component即可**
 
+## 统一初始化
+> * **用于需要给所有的请求设置属性的时候**
+> * **比如要爬取的网站很容易超时，则需要对每个请求设置超时时间**
+```java
+import me.kagura.InitConnection;
+import org.jsoup.Connection;
+
+@Component
+class initJsoup implements InitConnection {
+
+    @Override
+    public void init(Connection connection) {
+        connection.proxy("127.0.0.1", 8888);
+        connection.timeout(50000);
+        connection.followRedirects(true);
+        connection.maxBodySize(1024 * 10);
+    }
+}
+```
+
+## 统一过滤器
+> * **用于请求执行后统一处理**
+> * **比如将请求结果输出到控制台，或者上传OSS等需求**
+```java
+@Component
+class OSSFilter implements FollowFilter {
+
+    @Override
+    public void doFilter(Connection connection, LoginInfo loginInfo) {
+        if (loginInfo == null) {
+            return;
+        }
+        System.err.println(connection.response().body());
+    }
+}
+```
+
 ## 特点
 > * **自动重试**
 > * **自动设置Content-Type: application/json;**
