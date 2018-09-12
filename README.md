@@ -1,6 +1,8 @@
 # jjsoup-spring-boot-starter
 
-**jjsoups** 是对jsoup的无侵入封装，使它更好的适合于网络爬虫开发[Powered by Jsoup](https://github.com/jhy/jsoup)
+**jjsoup-spring-boot-starter是对jsoup的无侵入封装，使它更好的适合于网络爬虫开发[Powered by Jsoup](https://github.com/jhy/jsoup)**
+
+**Demo项目：[https://github.com/KingFalse/didi-app-auth-crawler](https://github.com/KingFalse/didi-app-auth-crawler)**
 
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/me.kagura/jjsoup-spring-boot-starter/badge.svg)](https://maven-badges.herokuapp.com/maven-central/me.kagura/jjsoup-spring-boot-starter) 
 
@@ -41,7 +43,6 @@ import java.io.IOException;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@AutoConfigureMockMvc
 public class JJsoupTest {
     @Autowired
     JJsoup jJsoup;
@@ -53,7 +54,7 @@ public class JJsoupTest {
         System.err.println(document);
 
         // 携带Logininfo
-        LoginInfo loginInfo = new LoginInfo();// new LoginInfo();随机生成UUID作为key，new LoginInfo("xxx");指定key
+        LoginInfo loginInfo = new LoginInfo();//随机生成UUID作为key，new LoginInfo("xxx");指定key
         // String              loginInfo.key;                一个字符串值，在序列化时作为key使用
         // Map<String, String> loginInfo.cookies;            用于存放cookie
         // Proxy               loginInfo.Proxy(Proxy proxy); 用于设置代理
@@ -175,6 +176,43 @@ class AuthController {
 ## 关于LoginInfo自动存取
 > * **jjsoup自带了一个redis序列化实现，您只需要添加spring-boot-starter-data-redis即可**
 > * **如果您的项目没有使用redis进行缓存，或者您想自定义缓存策略时可以实现me.kagura.LoginInfoSerializable接口并添加@Component即可**
+
+## 统一初始化
+> * **用于需要给所有的请求设置属性的时候**
+> * **比如要爬取的网站很容易超时，则需要对每个请求设置超时时间**
+```java
+import me.kagura.InitConnection;
+import org.jsoup.Connection;
+
+@Component
+class initJsoup implements InitConnection {
+
+    @Override
+    public void init(Connection connection) {
+        connection.proxy("127.0.0.1", 8888);
+        connection.timeout(50000);
+        connection.followRedirects(true);
+        connection.maxBodySize(1024 * 10);
+    }
+}
+```
+
+## 统一过滤器
+> * **用于请求执行后统一处理**
+> * **比如将请求结果输出到控制台，或者上传OSS等需求**
+```java
+@Component
+class OSSFilter implements FollowFilter {
+
+    @Override
+    public void doFilter(Connection connection, LoginInfo loginInfo) {
+        if (loginInfo == null) {
+            return;
+        }
+        System.err.println(connection.response().body());
+    }
+}
+```
 
 ## 特点
 > * **自动重试**
