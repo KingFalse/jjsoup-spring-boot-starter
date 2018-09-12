@@ -39,11 +39,11 @@ public class AspectServiceLoginInfo {
         if (!solidify) {
             return;
         }
-        logger.info("LoginInfo 自动保存...");
         Class[] parameterTypes = methodSignature.getParameterTypes();
         for (int i = 0; i < parameterTypes.length; i++) {
             if (parameterTypes[i].equals(LoginInfo.class)) {
                 try {
+                    logger.info("LoginInfo 自动保存...");
                     loginInfoSerializable.setLoginInfo((LoginInfo) joinPoint.getArgs()[i]);
                 } catch (Exception e) {
                     e.printStackTrace();
