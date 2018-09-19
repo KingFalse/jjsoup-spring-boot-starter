@@ -213,6 +213,29 @@ class OSSFilter implements FollowFilter {
     }
 }
 ```
+## CaptchaTool
+> * **用于在单元测试时辅助填充图片/短信验证码**
+```java
+import me.kagura.util.CaptchaTool;
+import javax.swing.*;
+import java.util.Base64;
+
+public class CaptchaToolTest {
+
+    public static void main(String[] args) {
+        String base64 = "data:image/png;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcG...";
+        // 图片验证码
+        String captcha = CaptchaTool.show(base64);
+        System.err.println(captcha);
+        // 短信验证码
+        String sms = CaptchaTool.show();
+        System.err.println(sms);
+    }
+
+}
+```
+![图片验证码](/captcha-1.png)
+![短信验证码](/captcha-2.png)
 
 ## 特点
 > * **自动重试**
