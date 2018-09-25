@@ -200,6 +200,8 @@ class initJsoup implements InitConnection {
 ## 统一过滤器
 > * **用于请求执行后统一处理**
 > * **比如将请求结果输出到控制台，或者上传OSS等需求**
+> > * **注意：**
+> > * **FollowFilter会在请求结束后最先执行，如果您需要使用`response.bodyStream()`获取流时请在doFilter方法中跳过对此请求的处理，否则会导致`java.lang.IllegalArgumentException: Request has already been read`异常**
 ```java
 @Component
 class OSSFilter implements FollowFilter {
