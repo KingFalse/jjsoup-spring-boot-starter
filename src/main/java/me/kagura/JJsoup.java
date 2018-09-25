@@ -2,7 +2,6 @@ package me.kagura;
 
 import com.sun.istack.NotNull;
 import me.kagura.config.BeanConfig;
-import me.kagura.util.AopTargetUtils;
 import org.jsoup.Connection;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -81,31 +80,19 @@ public abstract class JJsoup {
     }
 
     public Connection connect(@NotNull String url, @NotNull LoginInfo loginInfo, FollowProcess followProcess) {
-        try {
-            Connection connection = connect(url);
-            if (connection == null) {
-                return null;
-            }
-            //从代理类中取出实际对象
-            JJsoup beanFromProxy = AopTargetUtils.getTargetObject(connection, JJsoup.class);
-            //将LoginInfo跟cookie放入实际对象中
-            beanFromProxy.loginInfo = loginInfo;
-            Connection conn = (Connection) beanFromProxy;
-            conn.proxy((loginInfo != null && loginInfo.Proxy() != null) ? loginInfo.Proxy() : Proxy.NO_PROXY);
-            conn.cookies(loginInfo.cookies);
-            if (followProcess == null) {
-                return connection;
-            }
-            beanFromProxy.followProcess = followProcess;
-            return connection;
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
+        Connection connection = connect(url);
+        if (connection == null) {
+            return null;
         }
-        return null;
+        JJsoup jjsoup = (JJsoup) connection;
+        jjsoup.loginInfo = loginInfo;
+        connection.proxy((loginInfo != null && loginInfo.Proxy() != null) ? loginInfo.Proxy() : Proxy.NO_PROXY);
+        connection.cookies(loginInfo.cookies);
+        if (followProcess == null) {
+            return connection;
+        }
+        jjsoup.followProcess = followProcess;
+        return connection;
     }
 
     public Connection connect(@NotNull String url, @NotNull LoginInfo loginInfo) {

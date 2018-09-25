@@ -14,7 +14,6 @@ import javax.annotation.PostConstruct;
  */
 @Configuration
 @ComponentScan(basePackages = "me.kagura")
-@EnableAspectJAutoProxy(proxyTargetClass = true)
 public class BeanConfig {
 
     private static Class axClass;
@@ -96,4 +95,5 @@ class ConditionalLoginInfoSerializable implements Condition {
         }
         return true;
     }
+
 }
