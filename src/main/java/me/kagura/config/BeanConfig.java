@@ -20,6 +20,9 @@ public class BeanConfig {
 
     @PostConstruct
     public void initClass() throws NotFoundException, CannotCompileException {
+        //规避CaptchaTool出现java.awt.HeadlessException
+        System.setProperty("java.awt.headless", "false");
+
         ClassPool classPool = ClassPool.getDefault();
         String canonicalName = org.jsoup.helper.HttpConnection.class.getCanonicalName();
         //将org.jsoup.helper.HttpConnection复制一份org.jsoup.helper.HttpConnectionX
