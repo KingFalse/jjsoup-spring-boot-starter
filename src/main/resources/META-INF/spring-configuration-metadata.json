@@ -1,0 +1,10 @@
+{
+  "groups": [
+    {
+      "name": "jjsoup.logininfo.timeout",
+      "type": "java.lang.Long",
+      "description": "秒为单位，指定LoginInfo过期时间，-1则永不过期，默认1000",
+      "defaultValue": 1000
+    }
+  ]
+}
