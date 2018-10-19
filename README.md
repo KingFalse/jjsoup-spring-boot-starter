@@ -12,7 +12,7 @@
 <dependency>
     <groupId>me.kagura</groupId>
     <artifactId>jjsoup-spring-boot-starter</artifactId>
-    <version>0.1.5</version>
+    <version>0.1.6</version>
 </dependency>
 <!--可选，用于在@RestController中支持@JSONBodyField-->
 <dependency>
