@@ -1,5 +1,6 @@
 package me.kagura.util;
 
+import org.jsoup.helper.Validate;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -12,6 +13,7 @@ public class JJsoupUtil {
      * @return
      */
     public static Document convertToAbsUrlDocument(Document document) {
+        Validate.notEmpty(document.baseUri(), "document.baseUri() must not be empty");
         Elements relativePathElements = document.select("[src^=./],[src^=../],[src^=/]:not([src^=//]),[src^=/]:not([src^=//]),[href^=./],[href^=../],[href^=/]:not([href^=//]),[href^=/]:not([href^=//])");
         for (Element element : relativePathElements) {
             if (element.hasAttr("href")) {
