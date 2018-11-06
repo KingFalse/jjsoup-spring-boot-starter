@@ -14,15 +14,24 @@ public class JJsoupUtil {
      */
     public static Document convertToAbsUrlDocument(Document document) {
         Validate.notEmpty(document.baseUri(), "document.baseUri() must not be empty");
-        Elements relativePathElements = document.select("[src^=./],[src^=../],[src^=/]:not([src^=//]),[src^=/]:not([src^=//]),[href^=./],[href^=../],[href^=/]:not([href^=//]),[href^=/]:not([href^=//])");
+        Elements relativePathElements = document.select("[src],[href]");
         for (Element element : relativePathElements) {
             if (element.hasAttr("href")) {
-                element.attr("href", element.attr("abs:href"));
+                String href = element.attr("href");
+                if (!href.matches("^http[s]?://[\\d\\D]*") && !href.equals("#")) {
+                    element.attr("href", element.attr("abs:href"));
+                }
             }
             if (element.hasAttr("src")) {
-                element.attr("src", element.attr("abs:src"));
+                String src = element.attr("src");
+                if (!src.matches("^http[s]?://[\\d\\D]*") && !src.startsWith("data:image/")) {
+                    element.attr("src", element.attr("abs:src"));
+                }
+
             }
+
         }
         return document;
     }
+
 }
