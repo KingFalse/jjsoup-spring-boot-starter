@@ -7,7 +7,7 @@ import org.jsoup.select.Elements;
 
 public class JJsoupUtil {
     /**
-     * 将document中所有相对路径的href跟src转换成绝对路径
+     * 将document中所有相对路径的href跟src转换成绝对路径，兼容伪协议
      *
      * @param document
      * @return
@@ -18,13 +18,13 @@ public class JJsoupUtil {
         for (Element element : relativePathElements) {
             if (element.hasAttr("href")) {
                 String href = element.attr("href");
-                if (!href.matches("^http[s]?://[\\d\\D]*") && !href.equals("#")) {
+                if (!href.matches("^.*:[\\d\\D]*") && !href.equals("#")) {
                     element.attr("href", element.attr("abs:href"));
                 }
             }
             if (element.hasAttr("src")) {
                 String src = element.attr("src");
-                if (!src.matches("^http[s]?://[\\d\\D]*") && !src.startsWith("data:image/")) {
+                if (!src.matches("^.*:[\\d\\D]*")) {
                     element.attr("src", element.attr("abs:src"));
                 }
 
