@@ -79,10 +79,13 @@ public abstract class JJsoup {
         return null;
     }
 
-    public Connection connect(@NotNull String url, @NotNull LoginInfo loginInfo, FollowProcess followProcess) {
+    public Connection connect(@NotNull String url, LoginInfo loginInfo, FollowProcess followProcess) {
         Connection connection = connect(url);
         if (connection == null) {
             return null;
+        }
+        if (loginInfo == null) {
+            return connection;
         }
         JJsoup jjsoup = (JJsoup) connection;
         jjsoup.loginInfo = loginInfo;
@@ -95,7 +98,7 @@ public abstract class JJsoup {
         return connection;
     }
 
-    public Connection connect(@NotNull String url, @NotNull LoginInfo loginInfo) {
+    public Connection connect(@NotNull String url, LoginInfo loginInfo) {
         return connect(url, loginInfo, null);
     }
 
